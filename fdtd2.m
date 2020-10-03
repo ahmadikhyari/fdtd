@@ -50,9 +50,9 @@ Ezp(1:jj,1:ii)=0.0;
 nstep = ceil((tmax-t)/dt); % banyaknya kuantisasi n dari waktu t
 
 % inisiasi variabel terkait video
-%myVideo = VideoWriter('fdtd2'); %open video file
-%myVideo.FrameRate = 25;  % 5 - 10 works well
-%open(myVideo)
+myVideo = VideoWriter('fdtd2'); %open video file
+myVideo.FrameRate = 25;  % 5 - 10 works well
+open(myVideo)
 
 for n=0:nstep
     % nilai Ez di titik sumber (berubah terhadap n)
@@ -68,28 +68,32 @@ for n=0:nstep
         .*(Ezs(2:jj,1:ii)-Ezs(1:jj-1,1:ii));
     Hys(1:jj,1:ii-1)=cc.*Hys(1:jj,1:ii-1)+cd/dx...
         .*(Ezs(1:jj,2:ii)-Ezs(1:jj,1:ii-1));
-    Ezsbx(:,1) = Ezs(:,2); Ezsbx(:,2) = Ezs(:,ii-1);
-    Ezsby(1,:) = Ezs(2,:); Ezsby(2,:) = Ezs(jj-1,:);
+    Ezsbx(:,1) = Ezs(:,1); Ezsbx(:,2) = Ezs(:,2);
+    Ezsbx(:,3) = Ezs(:,ii-1); Ezsbx(:,4) = Ezs(:,ii);
+    Ezsby(1,:) = Ezs(1,:); Ezsby(2,:) = Ezs(2,:);
+    Ezsby(3,:) = Ezs(jj-1,:); Ezsby(4,:) = Ezs(jj,:);
     Ezs(2:jj-1,2:ii-1)=ca.*Ezs(2:jj-1,2:ii-1)+cb...
         .*(((Hys(2:jj-1,2:ii-1)-Hys(2:jj-1,1:ii-2)))/dx...
         -  ((Hxs(2:jj-1,2:ii-1)-Hxs(1:jj-2,2:ii-1))/dy));
-    Ezs(:,1) = Ezsbx(:,1)+((vp*dt-dx)/(vp*dt+dx))*(Ezs(:,2)-Ezs(:,1));
-    Ezs(:,ii) = Ezsbx(:,2)+((vp*dt-dx)/(vp*dt+dx))*(Ezs(:,ii-1)-Ezs(:,ii));
-    Ezs(1,:) = Ezsby(1,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezs(2,:)-Ezs(1,:));
-    Ezs(jj,:) = Ezsby(2,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezs(jj-1,:)-Ezs(jj,:));
+    Ezs(:,1) = Ezsbx(:,2)+((vp*dt-dx)/(vp*dt+dx))*(Ezs(:,2)-Ezsbx(:,1));
+    Ezs(:,ii) = Ezsbx(:,3)+((vp*dt-dx)/(vp*dt+dx))*(Ezs(:,ii-1)-Ezsbx(:,4));
+    Ezs(1,:) = Ezsby(2,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezs(2,:)-Ezsby(1,:));
+    Ezs(jj,:) = Ezsby(3,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezs(jj-1,:)-Ezsby(4,:));
     Hxp(1:jj-1,1:ii)=cc.*Hxp(1:jj-1,1:ii)-cd/dy...
         .*(Ezp(2:jj,1:ii)-Ezp(1:jj-1,1:ii));
     Hyp(1:jj,1:ii-1)=cc.*Hyp(1:jj,1:ii-1)+cd/dx...
         .*(Ezp(1:jj,2:ii)-Ezp(1:jj,1:ii-1));
-    Ezpbx(:,1) = Ezp(:,2); Ezpbx(:,2) = Ezp(:,ii-1);
-    Ezpby(1,:) = Ezp(2,:); Ezpby(2,:) = Ezp(jj-1,:);
+    Ezpbx(:,1) = Ezp(:,1); Ezpbx(:,2) = Ezp(:,2);
+    Ezpbx(:,3) = Ezp(:,ii-1); Ezpbx(:,4) = Ezp(:,ii);
+    Ezpby(1,:) = Ezp(1,:); Ezpby(2,:) = Ezp(2,:);
+    Ezpby(3,:) = Ezp(jj-1,:); Ezpby(4,:) = Ezp(jj,:);
     Ezp(2:jj-1,2:ii-1)=ca.*Ezp(2:jj-1,2:ii-1)+cb...
         .*(((Hyp(2:jj-1,2:ii-1)-Hyp(2:jj-1,1:ii-2)))/dx...
         -  ((Hxp(2:jj-1,2:ii-1)-Hxp(1:jj-2,2:ii-1))/dy));
-    Ezp(:,1) = Ezpbx(:,1)+((vp*dt-dx)/(vp*dt+dx))*(Ezp(:,2)-Ezp(:,1));
-    Ezp(:,ii) = Ezpbx(:,2)+((vp*dt-dx)/(vp*dt+dx))*(Ezp(:,ii-1)-Ezp(:,ii));
-    Ezp(1,:) = Ezpby(1,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezp(2,:)-Ezp(1,:));
-    Ezp(jj,:) = Ezpby(2,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezp(jj-1,:)-Ezp(jj,:));
+    Ezp(:,1) = Ezpbx(:,2)+((vp*dt-dx)/(vp*dt+dx))*(Ezp(:,2)-Ezpbx(:,1));
+    Ezp(:,ii) = Ezpbx(:,3)+((vp*dt-dx)/(vp*dt+dx))*(Ezp(:,ii-1)-Ezpbx(:,4));
+    Ezp(1,:) = Ezpby(2,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezp(2,:)-Ezpby(1,:));
+    Ezp(jj,:) = Ezpby(3,:)+((vp*dt-dy)/(vp*dt+dy))*(Ezp(jj-1,:)-Ezpby(4,:));
     % plot
     figure(1)
     subplot(2,2,1);
@@ -113,8 +117,8 @@ for n=0:nstep
     % increment of time
     t = t+dt;
     % perekaman gambar sebagai frame video
-    %frame = getframe(gcf); %get frame
-    %writeVideo(myVideo, frame);
+    frame = getframe(gcf); %get frame
+    writeVideo(myVideo, frame);
 end
 
-%close(myVideo)
+close(myVideo)
