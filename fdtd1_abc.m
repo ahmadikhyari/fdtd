@@ -41,11 +41,12 @@ for n=0:nstep
     % E  H  E  H  E  H      E  H  E
     % 1  1  2  2  3  3     i-1i-1 i
     Hy(:,1:i-1)=1.*Hy(:,1:i-1)+(dt/mu0/dx).*(Ez(:,2:i)-Ez(:,1:i-1));
-    Ezbx(:,1) = Ez(:,2); Ezbx(:,2) = Ez(:,i-1); % variabel sementara
+    Ezbx(:,1) = Ez(:,1); Ezbx(:,2) = Ez(:,2); % variabel sementara
+    Ezbx(:,3) = Ez(:,i-1); Ezbx(:,4) = Ez(:,i); % variabel sementara
     Ez(:,2:i-1)=1.*Ez(:,2:i-1)+(dt/ep0/dx).*(Hy(:,2:i-1)-Hy(:,1:i-2));
     % first-order mur boundary
-    Ez(:,1) = Ezbx(:,1)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,2)-Ez(:,1));
-    Ez(:,i) = Ezbx(:,2)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,i-1)-Ez(:,i));
+    Ez(:,1) = Ezbx(:,2)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,2)-Ezbx(:,1));
+    Ez(:,i) = Ezbx(:,3)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,i-1)-Ezbx(:,4));
     % plot
     figure(1)
     subplot(2,1,1);
