@@ -55,9 +55,12 @@ for n=0:length(t)
         +cd.*(((Ex(2:j,1:i-1,1:k)-Ex(1:j-1,1:i-1,1:k))/dy)...
         -((Ey(1:j-1,2:i,1:k)-Ey(1:j-1,1:i-1,1:k))/dx));
     % preparation for first-order Mur boundary calculation
-    Ezbx(:,1,:) = Ez(:,2,:); Ezbx(:,2,:) = Ez(:,i-1,:);
-    Ezby(1,:,:) = Ez(2,:,:); Ezby(2,:,:) = Ez(j-1,:,:);
-    Ezbz(:,:,1) = Ez(:,:,2); Ezbz(:,:,2) = Ez(:,:,k-2);
+    Ezbx(:,1,:) = Ez(:,1,:); Ezbx(:,2,:) = Ez(:,2,:);
+    Ezbx(:,3,:) = Ez(:,i-1,:); Ezbx(:,4,:) = Ez(:,i,:);
+    Ezby(1,:,:) = Ez(1,:,:); Ezby(2,:,:) = Ez(2,:,:);
+    Ezby(3,:,:) = Ez(j-1,:,:); Ezby(4,:,:) = Ez(j,:,:);
+    Ezbz(:,:,1) = Ez(:,:,1); Ezbz(:,:,2) = Ez(:,:,2);
+    Ezbz(:,:,3) = Ez(:,:,k-2); Ezbz(:,:,4) = Ez(:,:,k-1);
     Ex(2:j-1,1:i-1,2:k-1)=ca.*Ex(2:j-1,1:i-1,2:k-1)...
         +cb.*(((Hz(2:j-1,1:i-1,2:k-1)-Hz(1:j-2,1:i-1,2:k-1))/dy)...
         -((Hy(2:j-1,1:i-1,2:k-1)-Hy(2:j-1,1:i-1,1:k-2))/dz));
@@ -68,15 +71,15 @@ for n=0:length(t)
         +cb.*(((Hy(2:j-1,2:i-1,1:k-1)-Hy(2:j-1,1:i-2,1:k-1))/dx)...
         -((Hx(2:j-1,2:i-1,1:k-1)-Hx(1:j-2,2:i-1,1:k-1))/dy));
     % First-order Mur boundary
-    Ez(:,1,:) = Ezbx(:,1,:)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,2,:)-Ez(:,1,:));
-    Ez(:,i,:) = Ezbx(:,2,:)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,i-1,:)-Ez(:,i,:));
-    Ez(1,:,:) = Ezby(1,:,:)+((vp*dt-dy)/(vp*dt+dy))*(Ez(2,:,:)-Ez(1,:,:));
-    Ez(j,:,:) = Ezby(2,:,:)+((vp*dt-dy)/(vp*dt+dy))*(Ez(j-1,:,:)-Ez(j,:,:));
-    Ez(:,:,1) = Ezbz(:,:,1)+((vp*dt-dz)/(vp*dt+dz))*(Ez(:,:,2)-Ez(:,:,1));
-    Ez(:,:,k-1) = Ezbz(:,:,2)+((vp*dt-dz)/(vp*dt+dz))*(Ez(:,:,k-2)-Ez(:,:,k-1));
+    Ez(:,1,:) = Ezbx(:,2,:)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,2,:)-Ezbx(:,1,:));
+    Ez(:,i,:) = Ezbx(:,3,:)+((vp*dt-dx)/(vp*dt+dx))*(Ez(:,i-1,:)-Ezbx(:,4,:));
+    Ez(1,:,:) = Ezby(2,:,:)+((vp*dt-dy)/(vp*dt+dy))*(Ez(2,:,:)-Ezby(1,:,:));
+    Ez(j,:,:) = Ezby(3,:,:)+((vp*dt-dy)/(vp*dt+dy))*(Ez(j-1,:,:)-Ezby(4,:,:));
+    Ez(:,:,1) = Ezbz(:,:,2)+((vp*dt-dz)/(vp*dt+dz))*(Ez(:,:,2)-Ezbz(:,:,1));
+    Ez(:,:,k-1) = Ezbz(:,:,3)+((vp*dt-dz)/(vp*dt+dz))*(Ez(:,:,k-2)-Ezbz(:,:,4));
     figure(1)
     subplot(2,2,1);
-    slice(x,y,z(1:100),(abs(Ez)).^(0.5),x(xs),y(ys),z(zs));
+    slice(x,y,z(1:100),(abs(Ez)).^(0.1),x(xs),y(ys),z(zs));
     axis tight;
     xlabel('x (meter)');
     ylabel('y (meter)');
@@ -86,17 +89,17 @@ for n=0:length(t)
     %colorbar;
     caxis([0 1]);
     subplot(2,2,2);
-    imagesc(y,z(1:100),transpose(squeeze(abs(Ez(:,xs,:)).^(0.5))),[0 1]);
+    imagesc(y,z(1:100),transpose(squeeze(abs(Ez(:,xs,:)).^(0.1))),[0 1]);
     axis('square');
     xlabel('y (meter)');
     ylabel('z (meter)');
     subplot(2,2,4);
-    imagesc(x,y,abs((Ez(:,:,zs)).^(0.5)),[0 1]);
+    imagesc(x,y,abs((Ez(:,:,zs)).^(0.1)),[0 1]);
     axis('square');
     xlabel('x (meter)');
     ylabel('y (meter)');
     subplot(2,2,3);
-    imagesc(x,z(1:100),transpose(squeeze(abs(Ez(ys,:,:)).^(0.5))),[0 1]);
+    imagesc(x,z(1:100),transpose(squeeze(abs(Ez(ys,:,:)).^(0.1))),[0 1]);
     axis('square');
     xlabel('x (meter)');
     ylabel('z (meter)');
